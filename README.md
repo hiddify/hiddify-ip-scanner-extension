@@ -1,4 +1,6 @@
-# hiddify-app-example-extension
+# hiddify-ip-scanner-extension
+
+Based on the code in [warp-plus](https://github.com/bepass-org/warp-plus/blob/master/ipscanner/)
 
 
 ## 🌎 Translations
