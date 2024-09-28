@@ -1,10 +1,16 @@
-module github.com/hiddify/hiddify-app-example-extension
+module github.com/hiddify/hiddify-ip-scanner-extension
 
 go 1.22.0
 
 toolchain go1.22.3
 
-require github.com/hiddify/hiddify-core v1.9.1-0.20240928184846-b602eb5c6c76
+require (
+	github.com/fatih/color v1.16.0
+	github.com/hiddify/hiddify-core v1.9.1-0.20240928184846-b602eb5c6c76
+	github.com/rodaine/table v1.1.1
+	github.com/sagernet/sing v0.4.2
+	github.com/sagernet/sing-box v1.8.9
+)
 
 require (
 	berty.tech/go-libtor v1.0.385 // indirect
@@ -48,6 +54,8 @@ require (
 	github.com/libdns/cloudflare v0.1.1 // indirect
 	github.com/libdns/libdns v0.2.2 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mholt/acmez v1.2.0 // indirect
 	github.com/miekg/dns v1.1.62 // indirect
 	github.com/onsi/ginkgo/v2 v2.19.0 // indirect
@@ -75,8 +83,6 @@ require (
 	github.com/sagernet/netlink v0.0.0-20240523065131-45e60152f9ba // indirect
 	github.com/sagernet/quic-go v0.46.0-beta.4 // indirect
 	github.com/sagernet/reality v0.0.0-20230406110435-ee17307e7691 // indirect
-	github.com/sagernet/sing v0.4.2 // indirect
-	github.com/sagernet/sing-box v1.8.9 // indirect
 	github.com/sagernet/sing-dns v0.2.3 // indirect
 	github.com/sagernet/sing-mux v0.2.0 // indirect
 	github.com/sagernet/sing-quic v0.2.2 // indirect
