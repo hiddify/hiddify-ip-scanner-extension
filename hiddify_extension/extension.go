@@ -53,6 +53,8 @@ type CleanIPExtension struct {
 	result    string
 	isRunning bool
 	resultTbl table.Table
+	tblMutex sync.Mutex
+
 }
 
 func NewCleanIPExtension() ex.Extension {
@@ -110,7 +112,7 @@ func (e *CleanIPExtension) RunScan(ctx context.Context) {
 	}()
 
 	e.result = green.Sprintf("Scanning...\n")
-	e.resultTbl.SetRows([][]string{})
+	e.tableClean()
 	// new scanner
 	scanner := cleanip_scanner.NewScannerEngine(&cleanip_scanner.ScannerOptions{
 		UseIPv4:         true,
@@ -134,7 +136,7 @@ func (e *CleanIPExtension) RunScan(ctx context.Context) {
 			}
 			ipinfo, err := e.Ping(ip)
 
-			e.resultTbl.AddRow(ipinfo.AddrPort.Addr(), e.formatPing(ipinfo, err))
+			e.addRow(ipinfo.AddrPort.Addr(), e.formatPing(ipinfo, err))
 			e.UpdateUI(e.buildForm())
 			return ipinfo, err
 		},
@@ -158,10 +160,10 @@ func (e *CleanIPExtension) RunScan(ctx context.Context) {
 			// 	// result = append(result, ipList[i])
 			// 	e.result = fmt.Sprintln(e.result, ipList[i].AddrPort.Addr(), " : ", ipList[i].RTT.Milliseconds())
 			// }
-			e.resultTbl.SetRows([][]string{})
+			e.tableClean()
 
 			for _, info := range ipList {
-				e.resultTbl.AddRow(info.AddrPort.Addr(), e.formatPing(info, nil))
+				e.addRow(info.AddrPort.Addr(), e.formatPing(info, nil))
 				// e.result = fmt.Sprintln(e.result, ipList[i].AddrPort.Addr(), " : ", ipList[i].RTT.Milliseconds())
 			}
 
@@ -195,6 +197,27 @@ func (e *CleanIPExtension) formatPing(info cleanip_scanner.IPInfo, err error) st
 		return green.Sprint(rtt, "ms")
 	}
 }
+
+func  (e *CleanIPExtension)  addRow(vals ...interface{}){
+	e.tblMutex.Lock()
+	defer e.tblMutex.Unlock()
+	e.resultTbl.AddRow(vals))
+}
+
+func  (e *CleanIPExtension)  tableString(){
+	e.tblMutex.Lock()
+	defer e.tblMutex.Unlock()
+	var sb strings.Builder
+	e.resultTbl.WithWriter(&sb).Print()
+	return sb.String()
+}
+func  (e *CleanIPExtension)  tableClean(){
+	e.tblMutex.Lock()
+	defer e.tblMutex.Unlock()
+	e.resultTbl.SetRows([][]string{})
+}
+
+
 
 func (e *CleanIPExtension) SubmitData(data map[string]string) error {
 	err := e.setFormData(data)
@@ -247,8 +270,7 @@ func (e *CleanIPExtension) BeforeAppConnect(hiddifySettings *config.HiddifyOptio
 }
 
 func (e *CleanIPExtension) buildForm() ui.Form {
-	var sb strings.Builder
-	e.resultTbl.WithWriter(&sb).Print()
+	
 	if e.isRunning {
 		return ui.Form{
 			Title:       "Clean IP Extension",
@@ -260,7 +282,7 @@ func (e *CleanIPExtension) buildForm() ui.Form {
 					Readonly: true,
 					Key:      resultKey,
 					Label:    "Result",
-					Value:    e.result + sb.String(),
+					Value:    e.result + e.tableString(),
 					Lines:    20,
 				},
 			},
@@ -320,7 +342,7 @@ func (e *CleanIPExtension) buildForm() ui.Form {
 					Readonly: true,
 					Key:      resultKey,
 					Label:    "Result",
-					Value:    e.result + sb.String(),
+					Value:    e.result +e.tableString(),
 					Lines:    10,
 				},
 			},
