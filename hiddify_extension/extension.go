@@ -7,6 +7,7 @@ import (
 	"net/netip"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/hiddify/hiddify-core/common"
@@ -15,8 +16,8 @@ import (
 	"github.com/hiddify/hiddify-core/extension/sdk"
 	ui "github.com/hiddify/hiddify-core/extension/ui"
 
-	"github.com/hiddify/hiddify-ip-scanner-extension/cleanip_scanner"
 	v2 "github.com/hiddify/hiddify-core/v2"
+	"github.com/hiddify/hiddify-ip-scanner-extension/cleanip_scanner"
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
@@ -53,8 +54,7 @@ type CleanIPExtension struct {
 	result    string
 	isRunning bool
 	resultTbl table.Table
-	tblMutex sync.Mutex
-
+	tblMutex  sync.Mutex
 }
 
 func NewCleanIPExtension() ex.Extension {
@@ -198,26 +198,25 @@ func (e *CleanIPExtension) formatPing(info cleanip_scanner.IPInfo, err error) st
 	}
 }
 
-func  (e *CleanIPExtension)  addRow(vals ...interface{}){
+func (e *CleanIPExtension) addRow(values ...interface{}) {
 	e.tblMutex.Lock()
 	defer e.tblMutex.Unlock()
-	e.resultTbl.AddRow(vals))
+	e.resultTbl.AddRow(values...)
 }
 
-func  (e *CleanIPExtension)  tableString(){
+func (e *CleanIPExtension) tableString() string {
 	e.tblMutex.Lock()
 	defer e.tblMutex.Unlock()
 	var sb strings.Builder
 	e.resultTbl.WithWriter(&sb).Print()
 	return sb.String()
 }
-func  (e *CleanIPExtension)  tableClean(){
+
+func (e *CleanIPExtension) tableClean() {
 	e.tblMutex.Lock()
 	defer e.tblMutex.Unlock()
 	e.resultTbl.SetRows([][]string{})
 }
-
-
 
 func (e *CleanIPExtension) SubmitData(data map[string]string) error {
 	err := e.setFormData(data)
@@ -270,7 +269,6 @@ func (e *CleanIPExtension) BeforeAppConnect(hiddifySettings *config.HiddifyOptio
 }
 
 func (e *CleanIPExtension) buildForm() ui.Form {
-	
 	if e.isRunning {
 		return ui.Form{
 			Title:       "Clean IP Extension",
@@ -342,7 +340,7 @@ func (e *CleanIPExtension) buildForm() ui.Form {
 					Readonly: true,
 					Key:      resultKey,
 					Label:    "Result",
-					Value:    e.result +e.tableString(),
+					Value:    e.result + e.tableString(),
 					Lines:    10,
 				},
 			},
