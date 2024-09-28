@@ -384,7 +384,7 @@ func (e *CleanIPExtension) GetUI() ui.Form {
 func init() {
 	ex.RegisterExtension(
 		ex.ExtensionFactory{
-			Id:          "github.com/hiddify/example_extension/cleanip_extension",
+			Id:          "github.com/hiddify/hiddify-ip-scanner-extension/hiddify_extension",
 			Title:       "Clean IP Extension",
 			Description: "For Finding clean IP",
 			Builder:     NewCleanIPExtension,
