@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hiddify/hiddify-core/common"
+	
 	"github.com/hiddify/hiddify-core/config"
 	ex "github.com/hiddify/hiddify-core/extension"
 	"github.com/hiddify/hiddify-core/extension/sdk"
@@ -116,7 +116,7 @@ func (e *CleanIPExtension) RunScan(ctx context.Context) {
 	// new scanner
 	scanner := cleanip_scanner.NewScannerEngine(&cleanip_scanner.ScannerOptions{
 		UseIPv4:         true,
-		UseIPv6:         common.CanConnectIPv6(),
+		UseIPv6:         false,
 		MaxDesirableRTT: 500 * time.Millisecond,
 		IPQueueSize:     100,
 		IPQueueTTL:      10 * time.Second,
