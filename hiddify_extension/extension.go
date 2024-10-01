@@ -178,27 +178,35 @@ func (e *CleanIPExtension) RunScan(ctx context.Context) {
 }
 
 func (e *CleanIPExtension) SubmitData(button string, data map[string]string) error {
-	if button != ui.Button_Submit {
+	switch button {
+	case ui.ButtonDialogOk, ui.ButtonDialogClose:
 		return nil
+	case ui.ButtonCancel:
+		return e.stop()
+	case ui.ButtonSubmit:
+		err := e.setFormData(data)
+		if err != nil {
+			e.ShowMessage("Invalid data", err.Error())
+			return err
+		}
+		if e.cancel != nil {
+			e.cancel()
+		}
+		ctx, cancel := context.WithCancel(context.Background())
+		e.cancel = cancel
+
+		go e.RunScan(ctx)
+
+		return nil
+
+	default:
+		// Show message for undefined button actions
+		return e.ShowMessage("Button "+button+" is pressed", "No action is defined for this button")
 	}
 
-	err := e.setFormData(data)
-	if err != nil {
-		e.ShowMessage("Invalid data", err.Error())
-		return err
-	}
-	if e.cancel != nil {
-		e.cancel()
-	}
-	ctx, cancel := context.WithCancel(context.Background())
-	e.cancel = cancel
-
-	go e.RunScan(ctx)
-
-	return nil
 }
 
-func (e *CleanIPExtension) Cancel() error {
+func (e *CleanIPExtension) stop() error {
 	if e.cancel != nil {
 		e.cancel()
 		e.cancel = nil
@@ -207,8 +215,8 @@ func (e *CleanIPExtension) Cancel() error {
 	return nil
 }
 
-func (e *CleanIPExtension) Stop() error {
-	return e.Cancel()
+func (e *CleanIPExtension) Close() error {
+	return e.stop()
 }
 
 func (e *CleanIPExtension) modifyIP(outbound option.Outbound, ip netip.Addr) {

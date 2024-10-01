@@ -77,7 +77,7 @@ func (e *CleanIPExtension) getRunningUI() ui.Form {
 			{{
 				Type:     ui.FieldButton,
 				Readonly: true,
-				Key:      ui.Button_Cancel,
+				Key:      ui.ButtonCancel,
 				Label:    "Cancel",
 			}},
 		},
@@ -143,7 +143,7 @@ func (e *CleanIPExtension) getStoppedUI() ui.Form {
 			{{
 				Type:     ui.FieldButton,
 				Readonly: true,
-				Key:      ui.Button_Submit,
+				Key:      ui.ButtonSubmit,
 				Label:    "Submit",
 			}},
 		},
